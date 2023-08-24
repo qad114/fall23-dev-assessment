@@ -1,5 +1,5 @@
 import './UserTable.css';
-import { User, getUsers } from './api';
+import { User, addUser, deleteUser, getUsers, updateUser } from './api';
 import { useEffect, useRef, useState } from 'react';
 
 const PAGE_SIZE = 10;
@@ -38,9 +38,10 @@ export default function UserTable({ addTrigger }: {addTrigger: number}) {
       phone: '',
       rating: '',
       status: false,
-      id: ''
+      id: Math.floor(101 + (Math.random() * 10000)).toString()
     };
     setUsers([newUser, ...users]);
+    addUser(newUser);
     setModifyIndex(0);
   }
 
@@ -50,18 +51,21 @@ export default function UserTable({ addTrigger }: {addTrigger: number}) {
 
   function onSaveBtnClick(userIndex: number) {
     setModifyIndex(-1);
-    setUsers(users.map((user, index) => {
-      if (index === userIndex && nameField.current && avatarUriField.current && heroProjectField.current && notesField.current && emailAddressField.current && phoneNumberField.current && ratingField.current) {
-        user.name = nameField.current.value;
-        user.avatar = avatarUriField.current.value;
-        user.hero_project = heroProjectField.current.value;
-        user.notes = notesField.current.value;
-        user.email = emailAddressField.current.value;
-        user.phone = phoneNumberField.current.value;
-        user.rating = ratingField.current.value;
-      }
-      return user;
-    }));
+    if (nameField.current && avatarUriField.current && heroProjectField.current && notesField.current && emailAddressField.current && phoneNumberField.current && ratingField.current) {
+      const newUser: User = {
+        name: nameField.current.value,
+        avatar: avatarUriField.current.value,
+        hero_project: heroProjectField.current.value,
+        notes: notesField.current.value,
+        email: emailAddressField.current.value,
+        phone: phoneNumberField.current.value,
+        rating: ratingField.current.value,
+        status: users[userIndex].status,
+        id: users[userIndex].id
+      };
+      setUsers(users.map((user, index) => index === userIndex ? newUser : user));
+      updateUser(newUser);
+    }
   }
 
   function onCancelBtnClick(userIndex: number) {
@@ -69,11 +73,12 @@ export default function UserTable({ addTrigger }: {addTrigger: number}) {
   }
 
   function onDeleteBtnClick(userIndex: number) {
+    const id = users.filter((user, index) => index === userIndex)[0].id;
     setUsers(users.filter((user, index) => index !== userIndex));
+    deleteUser(id);
   }
 
   function onPageBtnClick(pageIndex: number) {
-    //setOffset(PAGE_SIZE * pageIndex);
     setPageNumber(pageIndex);
   }
 
