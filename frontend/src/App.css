@@ -1,3 +1,28 @@
+button {
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+  /*box-shadow: 0 0 3px #00000080;*/
+  border: 1px solid lightgray;
+}
+
+.heading {
+  font-size: 1.25rem;
+}
+
+.heading > span {
+  font-weight: bold;
+}
+
 .App {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar {
+  display: flex;
+  padding: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 0 8px #00000050;
 }

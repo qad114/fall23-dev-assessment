@@ -1,0 +1,67 @@
+.UserTable {
+  flex: auto;
+  overflow-x: scroll;
+  align-self: center;
+  border-radius: 1rem;
+  box-shadow: 0 0 16px #00000050;
+  width: 80%;
+  margin: 1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.UserTable .container-horizontal-scroll {
+  flex: auto;
+  overflow-x: scroll;
+}
+
+.UserTable table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.UserTable tr:first-child {
+  position: sticky;
+  top: 0;
+  background: white;
+}
+
+.UserTable tr {
+  height: 4rem;
+  border-bottom: 1px solid lightgray;
+}
+
+.UserTable img {
+  height: 4rem;
+  border-radius: 0.5rem;
+}
+
+.UserTable .container-btns {
+  display: flex;
+  flex-direction: column;
+}
+
+.UserTable .container-btns :first-child {
+  margin-bottom: 0.25rem;
+}
+
+.UserTable .pageselector {
+  padding: 0.5rem;
+}
+
+.UserTable .btn-page {
+  background: none;
+  border: none;
+}
+
+.UserTable .btn-page.inactive {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.UserTable input {
+  text-align: center;
+}
