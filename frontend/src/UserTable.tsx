@@ -110,7 +110,7 @@ export default function UserTable({ addTrigger }: {addTrigger: number}) {
             <th>User ID</th>
             <th>Operations</th>
           </tr>
-          {users.slice(pageNumber * PAGE_SIZE, (pageNumber + 1) * PAGE_SIZE).map((user, index) => (
+          {users.map((user, index) => (
             <tr>
               <td>{index === modifyIndex ? <div className='container-input'><input ref={nameField} defaultValue={user.name} /></div> : user.name}</td>
               <td>{index === modifyIndex ? <div className='container-input'><input ref={avatarUriField} defaultValue={user.avatar} /></div> : <img src={user.avatar} alt={`Avatar: ${user.name}`}></img>}</td>
@@ -137,7 +137,7 @@ export default function UserTable({ addTrigger }: {addTrigger: number}) {
                 }
               </td>
             </tr>
-          ))}
+          )).slice(pageNumber * PAGE_SIZE, (pageNumber + 1) * PAGE_SIZE)}
         </table>
       </div>
       <div className='pageselector'>
