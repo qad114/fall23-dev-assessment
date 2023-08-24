@@ -85,13 +85,13 @@ export default function UserTable() {
           </tr>
           {users.slice(pageNumber * PAGE_SIZE, (pageNumber + 1) * PAGE_SIZE).map((user, index) => (
             <tr>
-              <td>{index === modifyIndex ? <input ref={nameField} defaultValue={user.name} /> : user.name}</td>
-              <td>{index === modifyIndex ? <input ref={avatarUriField} defaultValue={user.avatar} /> : <img src={user.avatar} alt={`Avatar: ${user.name}`}></img>}</td>
-              <td>{index === modifyIndex ? <input ref={heroProjectField} defaultValue={user.hero_project} /> : user.hero_project}</td>
-              <td>{index === modifyIndex ? <input ref={notesField} defaultValue={user.notes} /> : user.notes}</td>
-              <td>{index === modifyIndex ? <input ref={emailAddressField} defaultValue={user.email} /> : user.email}</td>
-              <td>{index === modifyIndex ? <input ref={phoneNumberField} defaultValue={user.phone} /> : user.phone}</td>
-              <td>{index === modifyIndex ? <input ref={ratingField} defaultValue={user.rating} /> : user.rating}</td>
+              <td>{index === modifyIndex ? <div className='container-input'><input ref={nameField} defaultValue={user.name} /></div> : user.name}</td>
+              <td>{index === modifyIndex ? <div className='container-input'><input ref={avatarUriField} defaultValue={user.avatar} /></div> : <img src={user.avatar} alt={`Avatar: ${user.name}`}></img>}</td>
+              <td>{index === modifyIndex ? <div className='container-input'><input ref={heroProjectField} defaultValue={user.hero_project} /></div> : user.hero_project}</td>
+              <td>{index === modifyIndex ? <div className='container-input'><input ref={notesField} defaultValue={user.notes} /></div> : user.notes}</td>
+              <td>{index === modifyIndex ? <div className='container-input'><input ref={emailAddressField} defaultValue={user.email} /></div> : user.email}</td>
+              <td>{index === modifyIndex ? <div className='container-input'><input ref={phoneNumberField} defaultValue={user.phone} /></div> : user.phone}</td>
+              <td>{index === modifyIndex ? <div className='container-input'><input ref={ratingField} defaultValue={user.rating} /></div> : user.rating}</td>
               <td>{user.status ? 'Active' : 'Inactive'}</td>
               <td>{user.id}</td>
               <td>
