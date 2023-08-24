@@ -14,7 +14,7 @@ function genPageOffsets(total: number, pageSize: number) {
   return res;
 }
 
-export default function UserTable() {
+export default function UserTable({ addTrigger }: {addTrigger: number}) {
   const [users, setUsers] = useState<User[]>([]);
   const [modifyIndex, setModifyIndex] = useState(-1);
   //const [offset, setOffset] = useState(0);
@@ -27,6 +27,22 @@ export default function UserTable() {
   const emailAddressField = useRef<HTMLInputElement>(null);
   const phoneNumberField = useRef<HTMLInputElement>(null);
   const ratingField = useRef<HTMLInputElement>(null);
+
+  function onAddBtnClick() {
+    const newUser: User = {
+      name: 'New User',
+      avatar: '',
+      hero_project: '',
+      notes: '',
+      email: '',
+      phone: '',
+      rating: '',
+      status: false,
+      id: ''
+    };
+    setUsers([newUser, ...users]);
+    setModifyIndex(0);
+  }
 
   function onModifyBtnClick(userIndex: number) {
     setModifyIndex(userIndex);
@@ -66,6 +82,12 @@ export default function UserTable() {
       setUsers(users);
     });
   }, []);
+
+  useEffect(() => {
+    if (addTrigger > 0) {
+      onAddBtnClick();
+    }
+  }, [addTrigger])
 
   return (
     <div className='UserTable'>

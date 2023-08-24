@@ -4,6 +4,9 @@ import { User, getUsers } from './api';
 import UserTable from './UserTable';
 
 function App() {
+  // Triggers add course action in table
+  const [addTrigger, setAddTrigger] = useState(0);
+
   return (
     <div className='App'>
       <div className='navbar'>
@@ -11,10 +14,10 @@ function App() {
           <span>HaHa Heroes</span> VMS
         </div>
         <div>
-          <button>Add a user</button>
+          <button onClick={() => setAddTrigger(addTrigger + 1)}>Add a user</button>
         </div>
       </div>
-      <UserTable/>
+      <UserTable addTrigger={addTrigger} />
     </div>
   );
 }
