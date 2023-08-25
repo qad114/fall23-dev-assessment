@@ -1,11 +1,14 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import './App.css';
-import { User, getUsers } from './api';
+import { User } from './api';
 import UserTable from './UserTable';
+import UserInfo from './UserInfo';
 
 function App() {
   // Triggers add course action in table
   const [addTrigger, setAddTrigger] = useState(0);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [clickTable, setClickTable] = useState<any>({});
 
   return (
     <div className='App'>
@@ -17,7 +20,11 @@ function App() {
           <button onClick={() => setAddTrigger(addTrigger + 1)}>Add a user</button>
         </div>
       </div>
-      <UserTable addTrigger={addTrigger} />
+      {
+        selectedUser === null
+        ? <UserTable addTrigger={addTrigger} userSetter={setSelectedUser} clickTable={clickTable} clickTableSetter={setClickTable} />
+        : <UserInfo user={selectedUser} userSetter={setSelectedUser} clickTable={clickTable} />
+      }
     </div>
   );
 }

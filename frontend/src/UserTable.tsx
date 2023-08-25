@@ -14,10 +14,9 @@ function genPageOffsets(total: number, pageSize: number) {
   return res;
 }
 
-export default function UserTable({ addTrigger }: {addTrigger: number}) {
+export default function UserTable({ addTrigger, userSetter, clickTable, clickTableSetter }: {addTrigger: number, userSetter: (user: User) => void, clickTable: any, clickTableSetter: (table: any) => void}) {
   const [users, setUsers] = useState<User[]>([]);
   const [modifyIndex, setModifyIndex] = useState(-1);
-  //const [offset, setOffset] = useState(0);
   const [pageNumber, setPageNumber] = useState(0);
 
   const nameField = useRef<HTMLInputElement>(null);
@@ -82,6 +81,14 @@ export default function UserTable({ addTrigger }: {addTrigger: number}) {
     setPageNumber(pageIndex);
   }
 
+  function onRowClick(userIndex: number) {
+    if (modifyIndex === -1) {
+      const oldCount = clickTable[users[userIndex].id] || 0;
+      clickTableSetter({...clickTable, [users[userIndex].id]: oldCount + 1});
+      userSetter(users[userIndex]);
+    }
+  }
+
   useEffect(() => {
     getUsers().then(users => {
       setUsers(users);
@@ -92,7 +99,7 @@ export default function UserTable({ addTrigger }: {addTrigger: number}) {
     if (addTrigger > 0) {
       onAddBtnClick();
     }
-  }, [addTrigger])
+  }, [addTrigger]);
 
   return (
     <div className='UserTable'>
@@ -111,7 +118,7 @@ export default function UserTable({ addTrigger }: {addTrigger: number}) {
             <th>Operations</th>
           </tr>
           {users.map((user, index) => (
-            <tr>
+            <tr onClick={() => onRowClick(index)}>
               <td>{index === modifyIndex ? <div className='container-input'><input ref={nameField} defaultValue={user.name} /></div> : user.name}</td>
               <td>{index === modifyIndex ? <div className='container-input'><input ref={avatarUriField} defaultValue={user.avatar} /></div> : <img src={user.avatar} alt={`Avatar: ${user.name}`}></img>}</td>
               <td>{index === modifyIndex ? <div className='container-input'><input ref={heroProjectField} defaultValue={user.hero_project} /></div> : user.hero_project}</td>
@@ -125,13 +132,25 @@ export default function UserTable({ addTrigger }: {addTrigger: number}) {
                 {
                   modifyIndex === -1 ? (
                     <div className='container-btns'>
-                      <button onClick={() => onModifyBtnClick(index)}>Modify</button>
-                      <button onClick={() => onDeleteBtnClick(index)}>Delete</button>
+                      <button onClick={e => {
+                        e.stopPropagation();
+                        onModifyBtnClick(index);
+                      }}>Modify</button>
+                      <button onClick={e => {
+                        e.stopPropagation();
+                        onDeleteBtnClick(index);
+                      }}>Delete</button>
                     </div>
                   ) : modifyIndex === index ? (
                     <div className='container-btns'>
-                      <button onClick={() => onSaveBtnClick(index)}>Save</button>
-                      <button onClick={() => onCancelBtnClick(index)}>Cancel</button>
+                      <button onClick={e => {
+                        e.stopPropagation();
+                        onSaveBtnClick(index);
+                      }}>Save</button>
+                      <button onClick={e => {
+                        e.stopPropagation();
+                        onCancelBtnClick(index);
+                      }}>Cancel</button>
                     </div>
                   ) : null
                 }

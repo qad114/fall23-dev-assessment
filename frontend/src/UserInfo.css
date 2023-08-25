@@ -1,0 +1,70 @@
+.UserInfo {
+  position: relative;
+  flex: auto;
+  overflow-x: scroll;
+  align-self: center;
+  border-radius: 1rem;
+  box-shadow: 0 0 16px #00000050;
+  width: 80%;
+  margin: 1rem;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.UserInfo .container-avatar-name-contact {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.UserInfo img {
+  border-radius: 1rem;
+  height: 10rem;
+}
+
+.UserInfo .container-name-contact {
+  margin-left: 1rem;
+  text-align: start;
+}
+
+.UserInfo .name {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.UserInfo .email, .phone {
+  font-size: 1.25rem;
+}
+
+.UserInfo .notes {
+  text-align: start;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.UserInfo .container-info-cards {
+  display: flex;
+}
+
+.UserInfo .card {
+  flex: 1;
+  background-color: lightblue;
+  margin-right: 1rem;
+  border-radius: 1rem;
+}
+
+.UserInfo .card:last-of-type {
+  margin-right: 0;
+}
+
+.UserInfo .card :last-child {
+  font-size: 4rem;
+}
+
+.UserInfo .btn-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-top: 2rem;
+  margin-right: 2rem;
+}
