@@ -14,15 +14,17 @@ button {
 }
 
 .App {
+  background-color: aliceblue;
   text-align: center;
   display: flex;
   flex-direction: column;
 }
 
 .navbar {
+  background-color: white;
   display: flex;
   padding: 1rem;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 0 8px #00000050;
+  box-shadow: 0 2px 8px #0000001A;
 }

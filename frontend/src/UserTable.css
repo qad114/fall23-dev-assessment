@@ -1,13 +1,12 @@
 .UserTable {
+  background-color: white;
   flex: auto;
   overflow-x: scroll;
   align-self: center;
   border-radius: 1rem;
-  box-shadow: 0 0 16px #00000050;
+  box-shadow: 0 2px 8px #0000001A;
   width: 80%;
   margin: 1rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
   display: flex;
   flex-direction: column;
 }
@@ -15,11 +14,14 @@
 .UserTable .container-horizontal-scroll {
   flex: auto;
   overflow-x: scroll;
+  display: flex;
 }
 
 .UserTable table {
   width: 100%;
   border-collapse: collapse;
+  margin-left: 1rem;
+  margin-right: 1rem;
 }
 
 .UserTable tr:first-child {
