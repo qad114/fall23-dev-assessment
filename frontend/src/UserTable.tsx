@@ -35,13 +35,14 @@ export default function UserTable(props: UserTableProps) {
   const emailAddressField = useRef<HTMLInputElement>(null);
   const phoneNumberField = useRef<HTMLInputElement>(null);
   const ratingField = useRef<HTMLInputElement>(null);
+  const isActiveCheckbox = useRef<HTMLInputElement>(null);
 
   function onPageBtnClick(pageIndex: number) {
     setPageNumber(pageIndex);
   }
 
-  function genUserFromFields(status: boolean, id: string): User | null {
-    if (nameField.current && avatarUriField.current && heroProjectField.current && notesField.current && emailAddressField.current && emailAddressField.current && phoneNumberField.current && ratingField.current) {
+  function genUserFromFields(id: string): User | null {
+    if (nameField.current && avatarUriField.current && heroProjectField.current && notesField.current && emailAddressField.current && emailAddressField.current && phoneNumberField.current && ratingField.current && isActiveCheckbox.current) {
       return {
         name: nameField.current.value,
         avatar: avatarUriField.current.value,
@@ -50,7 +51,7 @@ export default function UserTable(props: UserTableProps) {
         email: emailAddressField.current.value,
         phone: phoneNumberField.current.value,
         rating: ratingField.current.value,
-        status: status,
+        status: isActiveCheckbox.current.checked,
         id: id
       }
     }
@@ -75,7 +76,7 @@ export default function UserTable(props: UserTableProps) {
             <th>Email Address</th>
             <th>Phone Number</th>
             <th>Rating</th>
-            <th>Status</th>
+            <th>Active?</th>
             <th>User ID</th>
             <th>Operations</th>
           </tr>
@@ -88,7 +89,7 @@ export default function UserTable(props: UserTableProps) {
               <td>{index === props.modifyIndex ? <div className='container-input'><input ref={emailAddressField} defaultValue={user.email} /></div> : user.email}</td>
               <td>{index === props.modifyIndex ? <div className='container-input'><input ref={phoneNumberField} defaultValue={user.phone} /></div> : user.phone}</td>
               <td>{index === props.modifyIndex ? <div className='container-input'><input ref={ratingField} defaultValue={user.rating} /></div> : user.rating}</td>
-              <td>{user.status ? 'Active' : 'Inactive'}</td>
+              <td><input ref={index === props.modifyIndex ? isActiveCheckbox : null} className='checkbox-is-active' disabled={index !== props.modifyIndex} type='checkbox' defaultChecked={user.status}></input></td>
               <td>{user.id}</td>
               <td>
                 {
@@ -107,7 +108,7 @@ export default function UserTable(props: UserTableProps) {
                     <div className='container-btns'>
                       <button onClick={e => {
                         e.stopPropagation();
-                        const user = genUserFromFields(props.users[index].status, props.users[index].id);
+                        const user = genUserFromFields(props.users[index].id);
                         if (user) props.onSaveBtnClick(index, user);
                       }}>Save</button>
                       <button onClick={e => {

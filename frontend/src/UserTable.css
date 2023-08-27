@@ -64,11 +64,23 @@
   width: 100%;
   height: 100%;
   box-sizing: border-box;
+  border: none;
+  font-size: inherit;
+  font-family: inherit;
+}
+
+.UserTable input:focus {
+  outline: none;
 }
 
 .UserTable img {
   height: 4rem;
   border-radius: 0.5rem;
+}
+
+.UserTable .checkbox-is-active {
+  color: red;
+  background-color: red;
 }
 
 .UserTable .container-btns {
