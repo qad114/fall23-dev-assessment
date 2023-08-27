@@ -1,8 +1,16 @@
 button {
-  padding: 0.25rem;
-  border-radius: 0.5rem;
-  /*box-shadow: 0 0 3px #00000080;*/
-  border: 1px solid lightgray;
+  background-color: aliceblue;
+  color: #303030;
+  padding: 0.4rem;
+  border-radius: 0.25rem;
+  border: none;
+  box-shadow: 0 2px 2px #0000001A;
+}
+
+button:hover {
+  background-color: lightblue;
+  color: #202020;
+  box-shadow: 0 3px 4px #00000030;
 }
 
 .heading {

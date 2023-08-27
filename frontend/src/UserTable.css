@@ -11,10 +11,18 @@
   flex-direction: column;
 }
 
+.UserTable::-webkit-scrollbar {
+  display: none;
+}
+
 .UserTable .container-horizontal-scroll {
   flex: auto;
   overflow-x: scroll;
   display: flex;
+}
+
+.UserTable .container-horizontal-scroll::-webkit-scrollbar {
+  display: none;
 }
 
 .UserTable table {
@@ -73,11 +81,6 @@
 
 .UserTable .pageselector {
   padding: 0.5rem;
-}
-
-.UserTable .btn-page {
-  background: none;
-  border: none;
 }
 
 .UserTable .btn-page.inactive {
