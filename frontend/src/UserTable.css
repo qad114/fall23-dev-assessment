@@ -9,6 +9,7 @@
   margin: 1rem;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 
 .UserTable::-webkit-scrollbar {
@@ -87,4 +88,16 @@
   color: blue;
   text-decoration: underline;
   cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .UserTable {
+    width: 100%;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .UserTable tr:first-child {
+    position: static;
+  }
 }

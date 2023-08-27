@@ -36,3 +36,9 @@ button:hover {
   justify-content: space-between;
   box-shadow: 0 2px 8px #0000001A;
 }
+
+@media (max-width: 768px) {
+  .navbar {
+    z-index: 2;
+  }
+}
