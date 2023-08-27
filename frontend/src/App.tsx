@@ -1,14 +1,65 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css';
-import { User } from './api';
+import { User, addUser, deleteUser, getUsers, updateUser } from './api';
 import UserTable from './UserTable';
 import UserInfo from './UserInfo';
 
 function App() {
-  // Triggers add course action in table
-  const [addTrigger, setAddTrigger] = useState(0);
+  const [users, setUsers] = useState<User[]>([]);
+  const [modifyIndex, setModifyIndex] = useState(-1);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [clickTable, setClickTable] = useState<any>({});
+
+  useEffect(() => {
+    getUsers().then(users => {
+      setUsers(users);
+    });
+  }, []);
+
+  function onRowClick(userIndex: number) {
+    if (modifyIndex === -1) {
+      const oldCount = clickTable[users[userIndex].id] || 0;
+      setClickTable({...clickTable, [users[userIndex].id]: oldCount + 1});
+      setSelectedUser(users[userIndex]);
+    }
+  }
+
+  function onAddBtnClick() {
+    const newUser: User = {
+      name: 'New User',
+      avatar: '',
+      hero_project: '',
+      notes: '',
+      email: '',
+      phone: '',
+      rating: '',
+      status: false,
+      id: Math.floor(101 + (Math.random() * 10000)).toString()
+    };
+    setUsers([newUser, ...users]);
+    addUser(newUser);
+    setModifyIndex(0);
+  }
+
+  function onModifyBtnClick(userIndex: number) {
+    setModifyIndex(userIndex);
+  }
+
+  function onSaveBtnClick(userIndex: number, newUser: User) {
+    setModifyIndex(-1);
+    setUsers(users.map((user, index) => index === userIndex ? newUser : user));
+    updateUser(newUser);
+  }
+
+  function onCancelBtnClick() {
+    setModifyIndex(-1);
+  }
+
+  function onDeleteBtnClick(userIndex: number) {
+    const id = users.filter((user, index) => index === userIndex)[0].id;
+    setUsers(users.filter((user, index) => index !== userIndex));
+    deleteUser(id);
+  }
 
   return (
     <div className='App'>
@@ -17,13 +68,24 @@ function App() {
           <span>HaHa Heroes</span> VMS
         </div>
         <div>
-          <button onClick={() => setAddTrigger(addTrigger + 1)}>Add a user</button>
+          <button onClick={onAddBtnClick}>Add a user</button>
         </div>
       </div>
       {
         selectedUser === null
-        ? <UserTable addTrigger={addTrigger} userSetter={setSelectedUser} clickTable={clickTable} clickTableSetter={setClickTable} />
-        : <UserInfo user={selectedUser} userSetter={setSelectedUser} clickTable={clickTable} />
+        ? <UserTable
+          users={users}
+          modifyIndex={modifyIndex}
+          onRowClick={onRowClick}
+          onAddBtnClick={onAddBtnClick}
+          onModifyBtnClick={onModifyBtnClick}
+          onSaveBtnClick={onSaveBtnClick}
+          onCancelBtnClick={onCancelBtnClick}
+          onDeleteBtnClick={onDeleteBtnClick} />
+        : <UserInfo 
+          user={selectedUser}
+          numClicks={clickTable[selectedUser.id] || 0}
+          onCloseBtnClick={() => setSelectedUser(null)} />
       }
     </div>
   );

@@ -1,5 +1,5 @@
 import './UserTable.css';
-import { User, addUser, deleteUser, getUsers, updateUser } from './api';
+import { User } from './api';
 import { useEffect, useRef, useState } from 'react';
 
 const PAGE_SIZE = 10;
@@ -14,9 +14,18 @@ function genPageOffsets(total: number, pageSize: number) {
   return res;
 }
 
-export default function UserTable({ addTrigger, userSetter, clickTable, clickTableSetter }: {addTrigger: number, userSetter: (user: User) => void, clickTable: any, clickTableSetter: (table: any) => void}) {
-  const [users, setUsers] = useState<User[]>([]);
-  const [modifyIndex, setModifyIndex] = useState(-1);
+type UserTableProps = {
+  users: User[],
+  modifyIndex: number,
+  onRowClick: (userIndex: number) => void,
+  onAddBtnClick: () => void,
+  onModifyBtnClick: (userIndex: number) => void,
+  onSaveBtnClick: (userIndex: number, newUser: User) => void,
+  onCancelBtnClick: () => void,
+  onDeleteBtnClick: (userIndex: number) => void,
+};
+
+export default function UserTable(props: UserTableProps) {
   const [pageNumber, setPageNumber] = useState(0);
 
   const nameField = useRef<HTMLInputElement>(null);
@@ -27,31 +36,13 @@ export default function UserTable({ addTrigger, userSetter, clickTable, clickTab
   const phoneNumberField = useRef<HTMLInputElement>(null);
   const ratingField = useRef<HTMLInputElement>(null);
 
-  function onAddBtnClick() {
-    const newUser: User = {
-      name: 'New User',
-      avatar: '',
-      hero_project: '',
-      notes: '',
-      email: '',
-      phone: '',
-      rating: '',
-      status: false,
-      id: Math.floor(101 + (Math.random() * 10000)).toString()
-    };
-    setUsers([newUser, ...users]);
-    addUser(newUser);
-    setModifyIndex(0);
+  function onPageBtnClick(pageIndex: number) {
+    setPageNumber(pageIndex);
   }
 
-  function onModifyBtnClick(userIndex: number) {
-    setModifyIndex(userIndex);
-  }
-
-  function onSaveBtnClick(userIndex: number) {
-    setModifyIndex(-1);
-    if (nameField.current && avatarUriField.current && heroProjectField.current && notesField.current && emailAddressField.current && phoneNumberField.current && ratingField.current) {
-      const newUser: User = {
+  function genUserFromFields(status: boolean, id: string): User | null {
+    if (nameField.current && avatarUriField.current && heroProjectField.current && notesField.current && emailAddressField.current && emailAddressField.current && phoneNumberField.current && ratingField.current) {
+      return {
         name: nameField.current.value,
         avatar: avatarUriField.current.value,
         hero_project: heroProjectField.current.value,
@@ -59,47 +50,18 @@ export default function UserTable({ addTrigger, userSetter, clickTable, clickTab
         email: emailAddressField.current.value,
         phone: phoneNumberField.current.value,
         rating: ratingField.current.value,
-        status: users[userIndex].status,
-        id: users[userIndex].id
-      };
-      setUsers(users.map((user, index) => index === userIndex ? newUser : user));
-      updateUser(newUser);
+        status: status,
+        id: id
+      }
     }
+    return null;
   }
 
-  function onCancelBtnClick(userIndex: number) {
-    setModifyIndex(-1);
-  }
-
-  function onDeleteBtnClick(userIndex: number) {
-    const id = users.filter((user, index) => index === userIndex)[0].id;
-    setUsers(users.filter((user, index) => index !== userIndex));
-    deleteUser(id);
-  }
-
-  function onPageBtnClick(pageIndex: number) {
-    setPageNumber(pageIndex);
-  }
-
-  function onRowClick(userIndex: number) {
-    if (modifyIndex === -1) {
-      const oldCount = clickTable[users[userIndex].id] || 0;
-      clickTableSetter({...clickTable, [users[userIndex].id]: oldCount + 1});
-      userSetter(users[userIndex]);
-    }
-  }
-
-  useEffect(() => {
-    getUsers().then(users => {
-      setUsers(users);
-    });
-  }, []);
-
-  useEffect(() => {
+  /*useEffect(() => {
     if (addTrigger > 0) {
       onAddBtnClick();
     }
-  }, [addTrigger]);
+  }, [addTrigger]);*/
 
   return (
     <div className='UserTable'>
@@ -117,39 +79,40 @@ export default function UserTable({ addTrigger, userSetter, clickTable, clickTab
             <th>User ID</th>
             <th>Operations</th>
           </tr>
-          {users.map((user, index) => (
-            <tr onClick={() => onRowClick(index)}>
-              <td>{index === modifyIndex ? <div className='container-input'><input ref={nameField} defaultValue={user.name} /></div> : user.name}</td>
-              <td>{index === modifyIndex ? <div className='container-input'><input ref={avatarUriField} defaultValue={user.avatar} /></div> : <img src={user.avatar} alt={`Avatar: ${user.name}`}></img>}</td>
-              <td>{index === modifyIndex ? <div className='container-input'><input ref={heroProjectField} defaultValue={user.hero_project} /></div> : user.hero_project}</td>
-              <td>{index === modifyIndex ? <div className='container-input'><input ref={notesField} defaultValue={user.notes} /></div> : user.notes}</td>
-              <td>{index === modifyIndex ? <div className='container-input'><input ref={emailAddressField} defaultValue={user.email} /></div> : user.email}</td>
-              <td>{index === modifyIndex ? <div className='container-input'><input ref={phoneNumberField} defaultValue={user.phone} /></div> : user.phone}</td>
-              <td>{index === modifyIndex ? <div className='container-input'><input ref={ratingField} defaultValue={user.rating} /></div> : user.rating}</td>
+          {props.users.map((user, index) => (
+            <tr onClick={() => props.onRowClick(index)}>
+              <td>{index === props.modifyIndex ? <div className='container-input'><input ref={nameField} defaultValue={user.name} /></div> : user.name}</td>
+              <td>{index === props.modifyIndex ? <div className='container-input'><input ref={avatarUriField} defaultValue={user.avatar} /></div> : <img src={user.avatar} alt={`Avatar: ${user.name}`}></img>}</td>
+              <td>{index === props.modifyIndex ? <div className='container-input'><input ref={heroProjectField} defaultValue={user.hero_project} /></div> : user.hero_project}</td>
+              <td>{index === props.modifyIndex ? <div className='container-input'><input ref={notesField} defaultValue={user.notes} /></div> : user.notes}</td>
+              <td>{index === props.modifyIndex ? <div className='container-input'><input ref={emailAddressField} defaultValue={user.email} /></div> : user.email}</td>
+              <td>{index === props.modifyIndex ? <div className='container-input'><input ref={phoneNumberField} defaultValue={user.phone} /></div> : user.phone}</td>
+              <td>{index === props.modifyIndex ? <div className='container-input'><input ref={ratingField} defaultValue={user.rating} /></div> : user.rating}</td>
               <td>{user.status ? 'Active' : 'Inactive'}</td>
               <td>{user.id}</td>
               <td>
                 {
-                  modifyIndex === -1 ? (
+                  props.modifyIndex === -1 ? (
                     <div className='container-btns'>
                       <button onClick={e => {
                         e.stopPropagation();
-                        onModifyBtnClick(index);
+                        props.onModifyBtnClick(index);
                       }}>Modify</button>
                       <button onClick={e => {
                         e.stopPropagation();
-                        onDeleteBtnClick(index);
+                        props.onDeleteBtnClick(index);
                       }}>Delete</button>
                     </div>
-                  ) : modifyIndex === index ? (
+                  ) : props.modifyIndex === index ? (
                     <div className='container-btns'>
                       <button onClick={e => {
                         e.stopPropagation();
-                        onSaveBtnClick(index);
+                        const user = genUserFromFields(props.users[index].status, props.users[index].id);
+                        if (user) props.onSaveBtnClick(index, user);
                       }}>Save</button>
                       <button onClick={e => {
                         e.stopPropagation();
-                        onCancelBtnClick(index);
+                        props.onCancelBtnClick();
                       }}>Cancel</button>
                     </div>
                   ) : null
@@ -161,7 +124,7 @@ export default function UserTable({ addTrigger, userSetter, clickTable, clickTab
       </div>
       <div className='pageselector'>
         {
-          genPageOffsets(users.length, PAGE_SIZE)
+          genPageOffsets(props.users.length, PAGE_SIZE)
           .map((offset, index) => 
             <button
               className={'btn-page ' + (index === pageNumber ? 'active' : 'inactive')}
