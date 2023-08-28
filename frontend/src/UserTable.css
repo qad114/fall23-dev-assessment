@@ -19,7 +19,6 @@
 .UserTable .container-horizontal-scroll {
   flex: auto;
   overflow-x: scroll;
-  display: flex;
 }
 
 .UserTable .container-horizontal-scroll::-webkit-scrollbar {
@@ -27,7 +26,7 @@
 }
 
 .UserTable table {
-  width: 100%;
+  width: calc(100% - 2rem);
   border-collapse: collapse;
   margin-left: 1rem;
   margin-right: 1rem;
