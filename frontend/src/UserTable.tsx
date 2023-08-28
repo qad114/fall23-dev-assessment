@@ -1,6 +1,6 @@
 import './UserTable.css';
 import { User } from './api';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const PAGE_SIZE = 10;
 
@@ -27,6 +27,13 @@ export default function UserTable(props: UserTableProps) {
   const ratingField = useRef<HTMLInputElement>(null);
   const isActiveCheckbox = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    const numPages = Math.ceil(props.users.length / PAGE_SIZE);
+    if (numPages > 0 && pageNumber >= numPages) {
+      setPageNumber(numPages - 1);
+    }
+  }, [props.users])
+
   function onPageBtnClick(pageIndex: number) {
     setPageNumber(pageIndex);
   }
@@ -47,12 +54,6 @@ export default function UserTable(props: UserTableProps) {
     }
     return null;
   }
-
-  /*useEffect(() => {
-    if (addTrigger > 0) {
-      onAddBtnClick();
-    }
-  }, [addTrigger]);*/
 
   return (
     <div className='UserTable'>
