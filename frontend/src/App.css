@@ -1,6 +1,7 @@
 button {
   background-color: aliceblue;
   color: #303030;
+  font-family: inherit;
   padding: 0.4rem;
   border-radius: 0.25rem;
   border: none;
@@ -10,6 +11,20 @@ button {
 button:hover {
   background-color: lightblue;
   color: #202020;
+  box-shadow: 0 3px 4px #00000030;
+}
+
+.input-filter-projects {
+  background-color: aliceblue;
+  padding: 0.4rem;
+  border: none;
+  box-shadow: 0 2px 2px #0000001A;
+  font-family: inherit;
+  margin-right: 1rem;
+}
+
+.input-filter-projects:focus {
+  outline: none;
   box-shadow: 0 3px 4px #00000030;
 }
 
@@ -40,5 +55,15 @@ button:hover {
 @media (max-width: 768px) {
   .navbar {
     z-index: 2;
+  }
+
+  .heading {
+    display: none;
+  }
+
+  .container-input-button {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
   }
 }

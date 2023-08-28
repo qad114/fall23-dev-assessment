@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './App.css';
 import { User, addUser, deleteUser, getUsers, updateUser } from './api';
 import UserTable from './UserTable';
@@ -9,11 +9,12 @@ function App() {
   const [modifyIndex, setModifyIndex] = useState(-1);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [clickTable, setClickTable] = useState<any>({});
+  const [filterProjectsQuery, setFilterProjectsQuery] = useState('');
+
+  const filterProjectsField = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    getUsers().then(users => {
-      setUsers(users);
-    });
+    getUsers().then(users => setUsers(users));
   }, []);
 
   function onRowClick(userIndex: number) {
@@ -67,7 +68,8 @@ function App() {
         <div className='heading'>
           <span>HaHa Heroes</span> VMS
         </div>
-        <div>
+        <div className='container-input-button'>
+          <input ref={filterProjectsField} className='input-filter-projects' type='text' placeholder='Filter projects...' onChange={() => setFilterProjectsQuery(filterProjectsField.current?.value || '')} />
           <button onClick={onAddBtnClick}>Add a user</button>
         </div>
       </div>
@@ -76,6 +78,7 @@ function App() {
         ? <UserTable
           users={users}
           modifyIndex={modifyIndex}
+          filterProjectsQuery={filterProjectsQuery}
           onRowClick={onRowClick}
           onAddBtnClick={onAddBtnClick}
           onModifyBtnClick={onModifyBtnClick}

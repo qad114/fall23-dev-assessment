@@ -8,6 +8,7 @@ const PAGE_SIZE = 10;
 type UserTableProps = {
   users: User[],
   modifyIndex: number,
+  filterProjectsQuery: string,
   onRowClick: (userIndex: number) => void,
   onAddBtnClick: () => void,
   onModifyBtnClick: (userIndex: number) => void,
@@ -31,11 +32,11 @@ export default function UserTable(props: UserTableProps) {
   const [status, setStatus] = useState(false);
 
   useEffect(() => {
-    const numPages = Math.ceil(props.users.length / PAGE_SIZE);
+    const numPages = Math.ceil(filterUsers(props.users).length / PAGE_SIZE);
     if (numPages > 0 && pageNumber >= numPages) {
       setPageNumber(numPages - 1);
     }
-  }, [props.users])
+  }, [props.users, props.filterProjectsQuery]);
 
   function onPageBtnClick(pageIndex: number) {
     setPageNumber(pageIndex);
@@ -86,6 +87,13 @@ export default function UserTable(props: UserTableProps) {
     return users;
   }
 
+  function filterUsers(users: User[]) {
+    if (props.filterProjectsQuery !== '') {
+      return users.filter(user => user.hero_project.toLowerCase().includes(props.filterProjectsQuery.toLowerCase()));
+    }
+    return users;
+  }
+
   return (
     <div className='UserTable'>
       <div className='container-horizontal-scroll'>
@@ -102,7 +110,7 @@ export default function UserTable(props: UserTableProps) {
             <th className={sortColumn === 'id' ? (sortAscending ? 'sorted-asc' : 'sorted-desc') : ''} onClick={() => onTableHeaderClick('id')}>User ID</th>
             <th>Operations</th>
           </tr>
-          {sortUsers(props.users).map((user, index) => (
+          {filterUsers(sortUsers(props.users)).map((user, index) => (
             <tr onClick={() => props.onRowClick(index)}>
               <td>{index === props.modifyIndex ? <div className='container-input'><input ref={nameField} defaultValue={user.name} /></div> : user.name}</td>
               <td>{index === props.modifyIndex ? <div className='container-input'><input ref={avatarUriField} defaultValue={user.avatar} /></div> : <img src={user.avatar} alt={`Avatar: ${user.name}`}></img>}</td>
@@ -149,7 +157,7 @@ export default function UserTable(props: UserTableProps) {
       </div>
       <div className='pageselector'>
         {
-          Array(Math.ceil(props.users.length / PAGE_SIZE))
+          Array(Math.ceil(filterUsers(props.users).length / PAGE_SIZE))
           .fill(0)
           .map((_, index) => 
             <button
