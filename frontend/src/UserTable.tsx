@@ -1,18 +1,8 @@
 import './UserTable.css';
 import { User } from './api';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 const PAGE_SIZE = 10;
-
-function genPageOffsets(total: number, pageSize: number) {
-  const res = [];
-  let n = 0;
-  while (n < total) {
-    res.push(n);
-    n += pageSize;
-  }
-  return res;
-}
 
 type UserTableProps = {
   users: User[],
@@ -125,8 +115,9 @@ export default function UserTable(props: UserTableProps) {
       </div>
       <div className='pageselector'>
         {
-          genPageOffsets(props.users.length, PAGE_SIZE)
-          .map((offset, index) => 
+          Array(Math.ceil(props.users.length / PAGE_SIZE))
+          .fill(0)
+          .map((_, index) => 
             <button
               className={'btn-page ' + (index === pageNumber ? 'active' : 'inactive')}
               onClick={() => onPageBtnClick(index)}
