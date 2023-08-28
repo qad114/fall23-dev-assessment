@@ -44,9 +44,32 @@
   border-bottom: 1px solid lightgray;
 }
 
+.UserTable tr:hover {
+  background-color: #F5F5F5;
+}
+
 .UserTable td, th {
   position: relative;
   padding: 0.5rem;
+}
+
+.UserTable th {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.UserTable th:hover {
+  background-color: #EEEEEE;
+}
+
+.UserTable th.sorted-asc::after {
+  content: ' \25BC';
+  font-size: 0.75rem;
+}
+
+.UserTable th.sorted-desc::after {
+  content: ' \25B2';
+  font-size: 0.75rem;
 }
 
 .UserTable .container-input {

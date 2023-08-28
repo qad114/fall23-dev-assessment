@@ -17,6 +17,8 @@ type UserTableProps = {
 
 export default function UserTable(props: UserTableProps) {
   const [pageNumber, setPageNumber] = useState(0);
+  const [sortColumn, setSortColumn] = useState<keyof User | null>(null);
+  const [sortAscending, setSortAscending] = useState(true);
 
   const nameField = useRef<HTMLInputElement>(null);
   const avatarUriField = useRef<HTMLInputElement>(null);
@@ -38,6 +40,19 @@ export default function UserTable(props: UserTableProps) {
     setPageNumber(pageIndex);
   }
 
+  function onTableHeaderClick(column: keyof User) {
+    if (column === sortColumn) {
+      if (sortAscending) {
+        setSortAscending(false);
+      } else {
+        setSortColumn(null);
+      }
+    } else {
+      setSortColumn(column);
+      setSortAscending(true);
+    }
+  }
+
   function genUserFromFields(id: string): User | null {
     if (nameField.current && avatarUriField.current && heroProjectField.current && notesField.current && emailAddressField.current && emailAddressField.current && phoneNumberField.current && ratingField.current && isActiveCheckbox.current) {
       return {
@@ -55,23 +70,38 @@ export default function UserTable(props: UserTableProps) {
     return null;
   }
 
+  function sortUsers(users: User[]) {
+    if (sortColumn !== null) {
+      return [...users].sort((user1, user2) => {
+        if (sortColumn === 'status') {
+          return ((+ user1.status) - (+ user2.status)) * (sortAscending ? 1 : -1);
+        } else if (sortColumn === 'id') {
+          return (parseInt(user1.id) - parseInt(user2.id)) * (sortAscending ? 1 : -1);
+        } else {
+          return sortAscending ? user1[sortColumn].localeCompare(user2[sortColumn]) : user2[sortColumn].localeCompare(user1[sortColumn]);
+        }
+      });
+    }
+    return users;
+  }
+
   return (
     <div className='UserTable'>
       <div className='container-horizontal-scroll'>
         <table>
           <tr>
-            <th>Name</th>
+            <th className={sortColumn === 'name' ? (sortAscending ? 'sorted-asc' : 'sorted-desc') : ''} onClick={() => onTableHeaderClick('name')}>Name</th>
             <th>Avatar</th>
-            <th>Hero Project</th>
-            <th>Notes</th>
-            <th>Email Address</th>
-            <th>Phone Number</th>
-            <th>Rating</th>
-            <th>Active?</th>
-            <th>User ID</th>
+            <th className={sortColumn === 'hero_project' ? (sortAscending ? 'sorted-asc' : 'sorted-desc') : ''} onClick={() => onTableHeaderClick('hero_project')}>Hero Project</th>
+            <th className={sortColumn === 'notes' ? (sortAscending ? 'sorted-asc' : 'sorted-desc') : ''} onClick={() => onTableHeaderClick('notes')}>Notes</th>
+            <th className={sortColumn === 'email' ? (sortAscending ? 'sorted-asc' : 'sorted-desc') : ''} onClick={() => onTableHeaderClick('email')}>Email Address</th>
+            <th className={sortColumn === 'phone' ? (sortAscending ? 'sorted-asc' : 'sorted-desc') : ''} onClick={() => onTableHeaderClick('phone')}>Phone Number</th>
+            <th className={sortColumn === 'rating' ? (sortAscending ? 'sorted-asc' : 'sorted-desc') : ''} onClick={() => onTableHeaderClick('rating')}>Rating</th>
+            <th className={sortColumn === 'status' ? (sortAscending ? 'sorted-asc' : 'sorted-desc') : ''} onClick={() => onTableHeaderClick('status')}>Active?</th>
+            <th className={sortColumn === 'id' ? (sortAscending ? 'sorted-asc' : 'sorted-desc') : ''} onClick={() => onTableHeaderClick('id')}>User ID</th>
             <th>Operations</th>
           </tr>
-          {props.users.map((user, index) => (
+          {sortUsers(props.users).map((user, index) => (
             <tr onClick={() => props.onRowClick(index)}>
               <td>{index === props.modifyIndex ? <div className='container-input'><input ref={nameField} defaultValue={user.name} /></div> : user.name}</td>
               <td>{index === props.modifyIndex ? <div className='container-input'><input ref={avatarUriField} defaultValue={user.avatar} /></div> : <img src={user.avatar} alt={`Avatar: ${user.name}`}></img>}</td>
@@ -111,7 +141,8 @@ export default function UserTable(props: UserTableProps) {
                 }
               </td>
             </tr>
-          )).slice(pageNumber * PAGE_SIZE, (pageNumber + 1) * PAGE_SIZE)}
+          ))
+          .slice(pageNumber * PAGE_SIZE, (pageNumber + 1) * PAGE_SIZE)}
         </table>
       </div>
       <div className='pageselector'>
