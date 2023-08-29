@@ -6,7 +6,7 @@ import UserInfo from './UserInfo';
 
 function App() {
   const [users, setUsers] = useState<User[]>([]);
-  const [modifyIndex, setModifyIndex] = useState(-1);
+  const [modifyId, setModifyId] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [clickTable, setClickTable] = useState<any>({});
   const [filterProjectsQuery, setFilterProjectsQuery] = useState('');
@@ -17,11 +17,11 @@ function App() {
     getUsers().then(users => setUsers(users));
   }, []);
 
-  function onRowClick(userIndex: number) {
-    if (modifyIndex === -1) {
-      const oldCount = clickTable[users[userIndex].id] || 0;
-      setClickTable({...clickTable, [users[userIndex].id]: oldCount + 1});
-      setSelectedUser(users[userIndex]);
+  function onRowClick(user: User) {
+    if (modifyId === null) {
+      const oldCount = clickTable[user.id] || 0;
+      setClickTable({...clickTable, [user.id]: oldCount + 1});
+      setSelectedUser(user);
     }
   }
 
@@ -39,27 +39,26 @@ function App() {
     };
     setUsers([newUser, ...users]);
     addUser(newUser);
-    setModifyIndex(0);
+    setModifyId(newUser.id);
   }
 
-  function onModifyBtnClick(userIndex: number) {
-    setModifyIndex(userIndex);
+  function onModifyBtnClick(user: User) {
+    setModifyId(user.id);
   }
 
-  function onSaveBtnClick(userIndex: number, newUser: User) {
-    setModifyIndex(-1);
-    setUsers(users.map((user, index) => index === userIndex ? newUser : user));
-    updateUser(newUser);
+  function onSaveBtnClick(user: User) {
+    setModifyId(null);
+    setUsers(users.map(oldUser => user.id === oldUser.id ? user : oldUser));
+    updateUser(user);
   }
 
   function onCancelBtnClick() {
-    setModifyIndex(-1);
+    setModifyId(null);
   }
 
-  function onDeleteBtnClick(userIndex: number) {
-    const id = users.filter((user, index) => index === userIndex)[0].id;
-    setUsers(users.filter((user, index) => index !== userIndex));
-    deleteUser(id);
+  function onDeleteBtnClick(user: User) {
+    setUsers(users.filter(oldUser => user.id !== oldUser.id));
+    deleteUser(user.id);
   }
 
   return (
@@ -77,7 +76,7 @@ function App() {
         selectedUser === null
         ? <UserTable
           users={users}
-          modifyIndex={modifyIndex}
+          modifyId={modifyId}
           filterProjectsQuery={filterProjectsQuery}
           onRowClick={onRowClick}
           onAddBtnClick={onAddBtnClick}

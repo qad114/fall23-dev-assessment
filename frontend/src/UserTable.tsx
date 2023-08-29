@@ -7,14 +7,14 @@ const PAGE_SIZE = 10;
 
 type UserTableProps = {
   users: User[],
-  modifyIndex: number,
+  modifyId: string | null,
   filterProjectsQuery: string,
-  onRowClick: (userIndex: number) => void,
+  onRowClick: (user: User) => void,
   onAddBtnClick: () => void,
-  onModifyBtnClick: (userIndex: number) => void,
-  onSaveBtnClick: (userIndex: number, newUser: User) => void,
+  onModifyBtnClick: (user: User) => void,
+  onSaveBtnClick: (user: User) => void,
   onCancelBtnClick: () => void,
-  onDeleteBtnClick: (userIndex: number) => void,
+  onDeleteBtnClick: (user: User) => void,
 };
 
 export default function UserTable(props: UserTableProps) {
@@ -32,7 +32,7 @@ export default function UserTable(props: UserTableProps) {
   const [status, setStatus] = useState(false);
 
   useEffect(() => {
-    const numPages = Math.ceil(filterUsers(props.users).length / PAGE_SIZE);
+    const numPages = Math.ceil(sortAndFilter(props.users).length / PAGE_SIZE);
     if (numPages > 0 && pageNumber >= numPages) {
       setPageNumber(numPages - 1);
     }
@@ -72,9 +72,9 @@ export default function UserTable(props: UserTableProps) {
     return null;
   }
 
-  function sortUsers(users: User[]) {
+  function sortAndFilter(users: User[]) {
     if (sortColumn !== null) {
-      return [...users].sort((user1, user2) => {
+      users = [...users].sort((user1, user2) => {
         if (sortColumn === 'status') {
           return ((+ user1.status) - (+ user2.status)) * (sortAscending ? 1 : -1);
         } else if (sortColumn === 'id') {
@@ -84,10 +84,7 @@ export default function UserTable(props: UserTableProps) {
         }
       });
     }
-    return users;
-  }
-
-  function filterUsers(users: User[]) {
+    
     if (props.filterProjectsQuery !== '') {
       return users.filter(user => user.hero_project.toLowerCase().includes(props.filterProjectsQuery.toLowerCase()));
     }
@@ -110,37 +107,37 @@ export default function UserTable(props: UserTableProps) {
             <th className={sortColumn === 'id' ? (sortAscending ? 'sorted-asc' : 'sorted-desc') : ''} onClick={() => onTableHeaderClick('id')}>User ID</th>
             <th>Operations</th>
           </tr>
-          {filterUsers(sortUsers(props.users)).map((user, index) => (
-            <tr onClick={() => props.onRowClick(index)}>
-              <td>{index === props.modifyIndex ? <div className='container-input'><input ref={nameField} defaultValue={user.name} /></div> : user.name}</td>
-              <td>{index === props.modifyIndex ? <div className='container-input'><input ref={avatarUriField} defaultValue={user.avatar} /></div> : <img src={user.avatar} alt={`Avatar: ${user.name}`}></img>}</td>
-              <td>{index === props.modifyIndex ? <div className='container-input'><input ref={heroProjectField} defaultValue={user.hero_project} /></div> : user.hero_project}</td>
-              <td>{index === props.modifyIndex ? <div className='container-input'><input ref={notesField} defaultValue={user.notes} /></div> : user.notes}</td>
-              <td>{index === props.modifyIndex ? <div className='container-input'><input ref={emailAddressField} defaultValue={user.email} /></div> : user.email}</td>
-              <td>{index === props.modifyIndex ? <div className='container-input'><input ref={phoneNumberField} defaultValue={user.phone} /></div> : user.phone}</td>
-              <td>{index === props.modifyIndex ? <div className='container-input'><input ref={ratingField} defaultValue={user.rating} /></div> : user.rating}</td>
-              <td><Checkbox readOnly={index !== props.modifyIndex} value={index === props.modifyIndex ? status : user.status} onClick={() => setStatus(!status)} /></td>
+          {sortAndFilter(props.users).map((user, index) => (
+            <tr onClick={() => props.onRowClick(user)}>
+              <td>{user.id === props.modifyId ? <div className='container-input'><input ref={nameField} defaultValue={user.name} /></div> : user.name}</td>
+              <td>{user.id === props.modifyId ? <div className='container-input'><input ref={avatarUriField} defaultValue={user.avatar} /></div> : <img src={user.avatar} alt={`Avatar: ${user.name}`}></img>}</td>
+              <td>{user.id === props.modifyId ? <div className='container-input'><input ref={heroProjectField} defaultValue={user.hero_project} /></div> : user.hero_project}</td>
+              <td>{user.id === props.modifyId ? <div className='container-input'><input ref={notesField} defaultValue={user.notes} /></div> : user.notes}</td>
+              <td>{user.id === props.modifyId ? <div className='container-input'><input ref={emailAddressField} defaultValue={user.email} /></div> : user.email}</td>
+              <td>{user.id === props.modifyId ? <div className='container-input'><input ref={phoneNumberField} defaultValue={user.phone} /></div> : user.phone}</td>
+              <td>{user.id === props.modifyId ? <div className='container-input'><input ref={ratingField} defaultValue={user.rating} /></div> : user.rating}</td>
+              <td><Checkbox readOnly={user.id !== props.modifyId} value={user.id === props.modifyId ? status : user.status} onClick={() => setStatus(!status)} /></td>
               <td>{user.id}</td>
               <td>
                 {
-                  props.modifyIndex === -1 ? (
+                  props.modifyId === null ? (
                     <div className='container-btns'>
                       <button onClick={e => {
                         e.stopPropagation();
                         setStatus(user.status);
-                        props.onModifyBtnClick(index);
+                        props.onModifyBtnClick(user);
                       }}>Modify</button>
                       <button onClick={e => {
                         e.stopPropagation();
-                        props.onDeleteBtnClick(index);
+                        props.onDeleteBtnClick(user);
                       }}>Delete</button>
                     </div>
-                  ) : props.modifyIndex === index ? (
+                  ) : props.modifyId === user.id ? (
                     <div className='container-btns'>
                       <button onClick={e => {
                         e.stopPropagation();
-                        const user = genUserFromFields(props.users[index].id);
-                        if (user) props.onSaveBtnClick(index, user);
+                        const newUser = genUserFromFields(user.id);
+                        if (newUser) props.onSaveBtnClick(newUser);
                       }}>Save</button>
                       <button onClick={e => {
                         e.stopPropagation();
@@ -157,7 +154,7 @@ export default function UserTable(props: UserTableProps) {
       </div>
       <div className='pageselector'>
         {
-          Array(Math.ceil(filterUsers(props.users).length / PAGE_SIZE))
+          Array(Math.ceil(sortAndFilter(props.users).length / PAGE_SIZE))
           .fill(0)
           .map((_, index) => 
             <button
