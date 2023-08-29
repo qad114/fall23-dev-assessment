@@ -3,25 +3,24 @@ import './UserTable.css';
 import { User } from './api';
 import { useEffect, useRef, useState } from 'react';
 
-const PAGE_SIZE = 10;
-
 type UserTableProps = {
   users: User[],
   modifyId: string | null,
   filterProjectsQuery: string,
+  pageSize: number,
+  pageNumber: number,
+  sortColumn: keyof User | null,
+  sortAscending: boolean,
   onRowClick: (user: User) => void,
-  onAddBtnClick: () => void,
   onModifyBtnClick: (user: User) => void,
   onSaveBtnClick: (user: User) => void,
   onCancelBtnClick: () => void,
   onDeleteBtnClick: (user: User) => void,
+  onTableHeaderClick: (column: keyof User) => void,
+  onPageBtnClick: (pageIndex: number) => void
 };
 
 export default function UserTable(props: UserTableProps) {
-  const [pageNumber, setPageNumber] = useState(0);
-  const [sortColumn, setSortColumn] = useState<keyof User | null>(null);
-  const [sortAscending, setSortAscending] = useState(true);
-
   const nameField = useRef<HTMLInputElement>(null);
   const avatarUriField = useRef<HTMLInputElement>(null);
   const heroProjectField = useRef<HTMLInputElement>(null);
@@ -30,30 +29,6 @@ export default function UserTable(props: UserTableProps) {
   const phoneNumberField = useRef<HTMLInputElement>(null);
   const ratingField = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState(false);
-
-  useEffect(() => {
-    const numPages = Math.ceil(sortAndFilter(props.users).length / PAGE_SIZE);
-    if (numPages > 0 && pageNumber >= numPages) {
-      setPageNumber(numPages - 1);
-    }
-  }, [props.users, props.filterProjectsQuery]);
-
-  function onPageBtnClick(pageIndex: number) {
-    setPageNumber(pageIndex);
-  }
-
-  function onTableHeaderClick(column: keyof User) {
-    if (column === sortColumn) {
-      if (sortAscending) {
-        setSortAscending(false);
-      } else {
-        setSortColumn(null);
-      }
-    } else {
-      setSortColumn(column);
-      setSortAscending(true);
-    }
-  }
 
   function genUserFromFields(id: string): User | null {
     if (nameField.current && avatarUriField.current && heroProjectField.current && notesField.current && emailAddressField.current && emailAddressField.current && phoneNumberField.current && ratingField.current /*&& isActiveCheckbox.current*/) {
@@ -73,14 +48,16 @@ export default function UserTable(props: UserTableProps) {
   }
 
   function sortAndFilter(users: User[]) {
-    if (sortColumn !== null) {
+    if (props.sortColumn !== null) {
       users = [...users].sort((user1, user2) => {
-        if (sortColumn === 'status') {
-          return ((+ user1.status) - (+ user2.status)) * (sortAscending ? 1 : -1);
-        } else if (sortColumn === 'id') {
-          return (parseInt(user1.id) - parseInt(user2.id)) * (sortAscending ? 1 : -1);
+        if (props.sortColumn === 'status') {
+          return ((+ user1.status) - (+ user2.status)) * (props.sortAscending ? 1 : -1);
+        } else if (props.sortColumn === 'id') {
+          return (parseInt(user1.id) - parseInt(user2.id)) * (props.sortAscending ? 1 : -1);
+        } else if (props.sortColumn !== null) {
+          return props.sortAscending ? user1[props.sortColumn].localeCompare(user2[props.sortColumn]) : user2[props.sortColumn].localeCompare(user1[props.sortColumn]);
         } else {
-          return sortAscending ? user1[sortColumn].localeCompare(user2[sortColumn]) : user2[sortColumn].localeCompare(user1[sortColumn]);
+          return 0;
         }
       });
     }
@@ -96,15 +73,15 @@ export default function UserTable(props: UserTableProps) {
       <div className='container-horizontal-scroll'>
         <table>
           <tr>
-            <th className={sortColumn === 'name' ? (sortAscending ? 'sorted-asc' : 'sorted-desc') : ''} onClick={() => onTableHeaderClick('name')}>Name</th>
+            <th className={props.sortColumn === 'name' ? (props.sortAscending ? 'sorted-asc' : 'sorted-desc') : ''} onClick={() => props.onTableHeaderClick('name')}>Name</th>
             <th>Avatar</th>
-            <th className={sortColumn === 'hero_project' ? (sortAscending ? 'sorted-asc' : 'sorted-desc') : ''} onClick={() => onTableHeaderClick('hero_project')}>Hero Project</th>
-            <th className={sortColumn === 'notes' ? (sortAscending ? 'sorted-asc' : 'sorted-desc') : ''} onClick={() => onTableHeaderClick('notes')}>Notes</th>
-            <th className={sortColumn === 'email' ? (sortAscending ? 'sorted-asc' : 'sorted-desc') : ''} onClick={() => onTableHeaderClick('email')}>Email Address</th>
-            <th className={sortColumn === 'phone' ? (sortAscending ? 'sorted-asc' : 'sorted-desc') : ''} onClick={() => onTableHeaderClick('phone')}>Phone Number</th>
-            <th className={sortColumn === 'rating' ? (sortAscending ? 'sorted-asc' : 'sorted-desc') : ''} onClick={() => onTableHeaderClick('rating')}>Rating</th>
-            <th className={sortColumn === 'status' ? (sortAscending ? 'sorted-asc' : 'sorted-desc') : ''} onClick={() => onTableHeaderClick('status')}>Active?</th>
-            <th className={sortColumn === 'id' ? (sortAscending ? 'sorted-asc' : 'sorted-desc') : ''} onClick={() => onTableHeaderClick('id')}>User ID</th>
+            <th className={props.sortColumn === 'hero_project' ? (props.sortAscending ? 'sorted-asc' : 'sorted-desc') : ''} onClick={() => props.onTableHeaderClick('hero_project')}>Hero Project</th>
+            <th className={props.sortColumn === 'notes' ? (props.sortAscending ? 'sorted-asc' : 'sorted-desc') : ''} onClick={() => props.onTableHeaderClick('notes')}>Notes</th>
+            <th className={props.sortColumn === 'email' ? (props.sortAscending ? 'sorted-asc' : 'sorted-desc') : ''} onClick={() => props.onTableHeaderClick('email')}>Email Address</th>
+            <th className={props.sortColumn === 'phone' ? (props.sortAscending ? 'sorted-asc' : 'sorted-desc') : ''} onClick={() => props.onTableHeaderClick('phone')}>Phone Number</th>
+            <th className={props.sortColumn === 'rating' ? (props.sortAscending ? 'sorted-asc' : 'sorted-desc') : ''} onClick={() => props.onTableHeaderClick('rating')}>Rating</th>
+            <th className={props.sortColumn === 'status' ? (props.sortAscending ? 'sorted-asc' : 'sorted-desc') : ''} onClick={() => props.onTableHeaderClick('status')}>Active?</th>
+            <th className={props.sortColumn === 'id' ? (props.sortAscending ? 'sorted-asc' : 'sorted-desc') : ''} onClick={() => props.onTableHeaderClick('id')}>User ID</th>
             <th>Operations</th>
           </tr>
           {sortAndFilter(props.users).map((user, index) => (
@@ -136,6 +113,7 @@ export default function UserTable(props: UserTableProps) {
                     <div className='container-btns'>
                       <button onClick={e => {
                         e.stopPropagation();
+                        setStatus(false);
                         const newUser = genUserFromFields(user.id);
                         if (newUser) props.onSaveBtnClick(newUser);
                       }}>Save</button>
@@ -149,17 +127,17 @@ export default function UserTable(props: UserTableProps) {
               </td>
             </tr>
           ))
-          .slice(pageNumber * PAGE_SIZE, (pageNumber + 1) * PAGE_SIZE)}
+          .slice(props.pageNumber * props.pageSize, (props.pageNumber + 1) * props.pageSize)}
         </table>
       </div>
       <div className='pageselector'>
         {
-          Array(Math.ceil(sortAndFilter(props.users).length / PAGE_SIZE))
+          Array(Math.ceil(sortAndFilter(props.users).length / props.pageSize))
           .fill(0)
           .map((_, index) => 
             <button
-              className={'btn-page ' + (index === pageNumber ? 'active' : 'inactive')}
-              onClick={() => onPageBtnClick(index)}
+              className={'btn-page ' + (index === props.pageNumber ? 'active' : 'inactive')}
+              onClick={() => props.onPageBtnClick(index)}
             >
               {index + 1}
             </button>

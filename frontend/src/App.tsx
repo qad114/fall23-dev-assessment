@@ -4,18 +4,30 @@ import { User, addUser, deleteUser, getUsers, updateUser } from './api';
 import UserTable from './UserTable';
 import UserInfo from './UserInfo';
 
+const PAGE_SIZE = 10;
+
 function App() {
   const [users, setUsers] = useState<User[]>([]);
   const [modifyId, setModifyId] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [clickTable, setClickTable] = useState<any>({});
   const [filterProjectsQuery, setFilterProjectsQuery] = useState('');
+  const [pageNumber, setPageNumber] = useState(0);
+  const [sortColumn, setSortColumn] = useState<keyof User | null>(null);
+  const [sortAscending, setSortAscending] = useState(true);
 
   const filterProjectsField = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     getUsers().then(users => setUsers(users));
   }, []);
+
+  useEffect(() => {
+    const numPages = Math.ceil(users.filter(user => user.hero_project.toLowerCase().includes(filterProjectsQuery.toLowerCase())).length / PAGE_SIZE);
+    if (numPages > 0 && pageNumber >= numPages) {
+      setPageNumber(numPages - 1);
+    }
+  }, [users, filterProjectsQuery]);
 
   function onRowClick(user: User) {
     if (modifyId === null) {
@@ -26,8 +38,12 @@ function App() {
   }
 
   function onAddBtnClick() {
+    setPageNumber(0);
+    setSortColumn(null);
+    setSortAscending(false);
+
     const newUser: User = {
-      name: 'New User',
+      name: '',
       avatar: '',
       hero_project: '',
       notes: '',
@@ -61,6 +77,23 @@ function App() {
     deleteUser(user.id);
   }
 
+  function onPageBtnClick(pageIndex: number) {
+    setPageNumber(pageIndex);
+  }
+
+  function onTableHeaderClick(column: keyof User) {
+    if (column === sortColumn) {
+      if (sortAscending) {
+        setSortAscending(false);
+      } else {
+        setSortColumn(null);
+      }
+    } else {
+      setSortColumn(column);
+      setSortAscending(true);
+    }
+  }
+
   return (
     <div className='App'>
       <div className='navbar'>
@@ -78,12 +111,17 @@ function App() {
           users={users}
           modifyId={modifyId}
           filterProjectsQuery={filterProjectsQuery}
+          pageSize={PAGE_SIZE}
+          pageNumber={pageNumber}
+          sortColumn={sortColumn}
+          sortAscending={sortAscending}
           onRowClick={onRowClick}
-          onAddBtnClick={onAddBtnClick}
           onModifyBtnClick={onModifyBtnClick}
           onSaveBtnClick={onSaveBtnClick}
           onCancelBtnClick={onCancelBtnClick}
-          onDeleteBtnClick={onDeleteBtnClick} />
+          onDeleteBtnClick={onDeleteBtnClick}
+          onTableHeaderClick={onTableHeaderClick}
+          onPageBtnClick={onPageBtnClick} />
         : <UserInfo 
           user={selectedUser}
           numClicks={clickTable[selectedUser.id] || 0}
