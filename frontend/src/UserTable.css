@@ -126,10 +126,8 @@
   padding: 0.5rem;
 }
 
-.UserTable .btn-page.inactive {
-  color: blue;
-  text-decoration: underline;
-  cursor: pointer;
+.UserTable .btn-page.active {
+  background-color: lightblue;
 }
 
 @media (max-width: 768px) {

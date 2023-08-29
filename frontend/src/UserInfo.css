@@ -94,4 +94,21 @@
     align-items: center;
     text-align: center;
   }
+
+  .UserInfo .notes {
+    text-align: center;
+  }
+
+  .UserInfo .container-info-cards {
+    flex-direction: column;
+  }
+
+  .UserInfo .card {
+    margin-right: 0;
+    margin-bottom: 1rem;
+  }
+  
+  .UserInfo .card:last-of-type {
+    margin-bottom: 0;
+  }
 }
